@@ -88,7 +88,6 @@ app.post('/api/persons', (req, res) => {
         })
     }
 
-
     const person = req.body
     person.id = getRandom(1, 100)
     persons = persons.concat(person)
