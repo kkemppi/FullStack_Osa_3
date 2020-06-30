@@ -4,12 +4,10 @@ const app = express()
 const morgan = require('morgan')
 const cors = require ('cors')
 const Person = require('./models/person')
-const mongoose = require('mongoose')
 
 app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
-mongoose.set('useFindAndModify', false)
 
 morgan.token('content', function getBody(req,res) {
 	if(req.method === 'POST'){
@@ -84,7 +82,10 @@ app.listen(PORT, () => {
 
 	if (error.name === 'CastError') {
 		return response.status(400).send({ error: 'malformatted id' })
-	}
+    }
+    if (error.name === 'ValidationError') {
+        return response.status(400).send({error: error.message})
+    }
 	next(error)
 }
 app.use(errorHandler)

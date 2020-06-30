@@ -28,6 +28,7 @@
     "express": "^4.17.1",
     "marked": "^1.1.0",
     "mongoose": "^5.9.20",
+    "mongoose-unique-validator": "^2.0.3",
     "morgan": "^1.10.0",
     "static": "^2.0.0"
   },
