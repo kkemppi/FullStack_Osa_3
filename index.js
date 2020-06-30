@@ -9,10 +9,10 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
 
-morgan.token('content', function getBody(req,res) {
-	if(req.method === 'POST'){
-		return(JSON.stringify(req.body))}
-	return null
+morgan.token('content', function getBody(req) {
+    if(req.method === 'POST'){
+        return(JSON.stringify(req.body))}
+    return null
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
 
@@ -25,7 +25,7 @@ app.get('/api/persons', (req, res) => {
 app.get('/api/persons/:id', (req, res, next) => {
     Person.findById(req.params.id)
         .then(person => {
-            if (note) {
+            if (person) {
                 res.json(person)
             }else{
                 res.status(404).end()
@@ -35,14 +35,14 @@ app.get('/api/persons/:id', (req, res, next) => {
 })
 
 app.get('/info', (req, res) => {
-    count = Person.countDocuments({}).exec((err,count)=>{
+    Person.countDocuments({}).exec((err,count) => {
         res.send('<div>Phonebook has info of '+ count + ' persons </div>' + '<div>' + Date() + '</div>')
     })
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
     Person.findByIdAndRemove(req.params.id)
-        .then(result => {res.status(204).end()})
+        .then(() => {res.status(204).end()})
         .catch(error => next(error))
 })
 
@@ -65,7 +65,7 @@ app.put('/api/persons/:id', (req, res, next) => {
         number: req.body.number
     }
 
-    Person.findByIdAndUpdate(req.params.id, person, {new: true})
+    Person.findByIdAndUpdate(req.params.id, person, { new: true })
         .then(updatedPerson => {
             res.json(updatedPerson.toJSON())
         })
@@ -75,18 +75,16 @@ app.put('/api/persons/:id', (req, res, next) => {
 const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
-  })
+})
 
-
-  const errorHandler = (error, request, response, next) => {
-
-	if (error.name === 'CastError') {
-		return response.status(400).send({ error: 'malformatted id' })
+const errorHandler = (error, request, response, next) => {
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
     }
     if (error.name === 'ValidationError') {
-        return response.status(400).send({error: error.message})
+        return response.status(400).send({ error: error.message })
     }
-	next(error)
+    next(error)
 }
 app.use(errorHandler)
 
